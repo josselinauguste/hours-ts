@@ -1,15 +1,15 @@
-import { loadState } from "./state.ts";
-import { openLog } from "./log.ts";
-import { getConfiguration } from "./configuration.ts";
+import {apply, loadState} from "./state.ts";
+import {openLog} from "./log.ts";
+import {getConfiguration} from "./configuration.ts";
+import {getCommand} from "./command.ts";
 
-const logFile = await getConfiguration(Deno.env);
+const configuration = await getConfiguration(Deno.env);
 
-const log = openLog(logFile);
-
+const log = openLog(configuration.logFile);
 const state = await loadState(log);
 
-if (state.currentSession === null) {
-  await log.append({ cmd: "start", ts: Date.now() });
-} else {
-  await log.append({ cmd: "stop", ts: Date.now() });
+const command = getCommand(Deno.args);
+const event = apply(state, command);
+if (event) {
+  await log.append(event);
 }
