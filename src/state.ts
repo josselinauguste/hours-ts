@@ -1,11 +1,17 @@
 import {Event, LogReducer} from "./log.ts";
 import {Command} from "./command.ts";
 
-export interface ActiveSession {
+interface ActiveSession {
   started: Date;
 }
 
+interface Session {
+  start: Date;
+  end: Date;
+}
+
 export interface State {
+  sessions: Session[];
   currentSession: ActiveSession | null;
 }
 
@@ -18,11 +24,20 @@ export function loadState(log: LogReducer<State>): Promise<State> {
 }
 
 function evolve(state: State, event: Event): State | undefined {
-  if (event.kind === "start" && state.currentSession === null) {
-    return { ...state, currentSession: { started: new Date(event.ts) } };
-  }
-  if (event.kind === "stop") {
-    return { ...state, currentSession: null };
+  switch (event.kind) {
+    case "start":
+      if (state.currentSession === null) {
+        return { ...state, currentSession: { started: new Date(event.ts) } };
+      }
+      break;
+    case "stop":
+      if (state.currentSession !== null) {
+        const sessions = [...state.sessions, {
+          start: state.currentSession.started,
+          end: new Date(event.ts),
+        }];
+        return { sessions, currentSession: null };
+      }
   }
 }
 

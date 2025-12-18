@@ -2,10 +2,26 @@ import {assertEquals} from "@std/assert";
 import {apply, loadState, State} from "./state.ts";
 import {Event, LogReducer} from "./log.ts";
 
-Deno.test("load state", async () => {
+Deno.test("load empty state", async () => {
   const state = await loadState(stubbedReducer([]));
 
   assertEquals(state, { sessions: [], currentSession: null });
+});
+
+Deno.test("load state", async () => {
+  const state = await loadState(stubbedReducer([
+    { kind: "start", ts: 1766007440000 },
+    { kind: "stop", ts: 1766007441152 },
+    { kind: "start", ts: 1766007442304 },
+  ]));
+
+  assertEquals(state, {
+    sessions: [{
+      start: new Date(1766007440000),
+      end: new Date(1766007441152),
+    }],
+    currentSession: { started: new Date(1766007442304) },
+  });
 });
 
 Deno.test("apply log to inactive state", () => {
