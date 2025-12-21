@@ -3,6 +3,7 @@ import {ensureFile} from "@std/fs";
 
 export interface Configuration {
   logFile: string;
+  startOfWeek: number;
 }
 
 export async function getConfiguration(
@@ -14,5 +15,5 @@ export async function getConfiguration(
   }
   const logFile = path.join(home, ".local/share/hours/hours.log");
   await ensureFile(logFile);
-  return { logFile };
+  return { logFile, startOfWeek: 1 };
 }

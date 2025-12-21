@@ -1,11 +1,11 @@
-import {Event, LogReducer} from "./log.ts";
-import {Command} from "./command.ts";
+import { Event, LogReducer } from "./log.ts";
+import { Command } from "./command.ts";
 
 interface ActiveSession {
   started: Date;
 }
 
-interface Session {
+export interface Session {
   start: Date;
   end: Date;
 }
@@ -49,5 +49,7 @@ export function apply(state: State, command: Command): Event | null {
       } else {
         return { kind: "stop", ts: command.ts };
       }
+    case "report":
+      return null;
   }
 }
