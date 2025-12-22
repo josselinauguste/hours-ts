@@ -2,7 +2,7 @@ import {Session, State} from "../domain/state.ts";
 import {Duration} from "../domain/duration.ts";
 import {getDayName, getDayOfWeekFromStartDay, getStartOfWeek,} from "../domain/week.ts";
 
-export function report(state: State, startDay: number) {
+export function printReport(state: State, startDay: number) {
   const startOfWeek = getStartOfWeek(new Date(), startDay);
   const week = state.sessions.filter((s) => s.start >= startOfWeek).reduce(
     reduceWeekSessions(startDay),

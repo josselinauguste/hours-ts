@@ -48,7 +48,7 @@ export function evolve(state: State, event: Event): State {
   throw new Error("Unexpected event");
 }
 
-export function log(state: State, ts: number): Event | undefined {
+export function log(state: State, ts: number): Event | null {
   if (state.currentSession === null) {
     return { kind: "start", ts: ts };
   } else {
