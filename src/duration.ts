@@ -9,8 +9,8 @@ export const Duration = {
   },
   format(duration: Duration) {
     const hours = Math.floor(duration / 60 / 60);
-    const minutes = Math.floor(duration - hours * 60 * 60) / 60;
+    const minutes = Math.floor((duration - (hours * 60 * 60)) / 60);
     const paddedMinutes = minutes.toString().padStart(2, "0");
-    return `${hours}:${paddedMinutes}`;
+    return `${hours}h${paddedMinutes}m`;
   },
 };

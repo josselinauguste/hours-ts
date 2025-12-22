@@ -1,5 +1,5 @@
-import { Event, LogReducer } from "./log.ts";
-import { Command } from "./command.ts";
+import {Event, LogReducer} from "./log.ts";
+import {Command} from "./command.ts";
 
 interface ActiveSession {
   started: Date;
@@ -23,7 +23,7 @@ export function loadState(log: LogReducer<State>): Promise<State> {
     });
 }
 
-function evolve(state: State, event: Event): State | undefined {
+function evolve(state: State, event: Event): State {
   switch (event.kind) {
     case "start":
       if (state.currentSession === null) {
@@ -39,9 +39,19 @@ function evolve(state: State, event: Event): State | undefined {
         return { sessions, currentSession: null };
       }
   }
+  throw new Error("Unexpected event");
 }
 
-export function apply(state: State, command: Command): Event | null {
+export function apply(state: State, command: Command) {
+  const event = applyCommandToState(command, state);
+  const newState = event ? evolve(state, event) : state;
+  return [newState, event] as const;
+}
+
+function applyCommandToState(
+  command: { kind: "log"; ts: number } | { kind: "report" },
+  state: State,
+): Event | null {
   switch (command.kind) {
     case "log":
       if (state.currentSession === null) {
