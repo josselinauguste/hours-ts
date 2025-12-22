@@ -1,6 +1,6 @@
 import {assertEquals} from "@std/assert";
-import {apply, loadState, State} from "./state.ts";
-import {Event, LogReducer} from "./log.ts";
+import {EventReducer, loadState, log, State} from "./state.ts";
+import {Event} from "./event.ts";
 
 Deno.test("load empty state", async () => {
   const state = await loadState(stubbedReducer([]));
@@ -25,27 +25,21 @@ Deno.test("load state", async () => {
 });
 
 Deno.test("apply log to inactive state", () => {
-  const event = apply({ sessions: [], currentSession: null }, {
-    kind: "log",
-    ts: 1766007441152,
-  });
+  const event = log({ sessions: [], currentSession: null }, 1766007441152);
 
   assertEquals(event, { kind: "start", ts: 1766007441152 });
 });
 
 Deno.test("apply log to active state", () => {
-  const event = apply(
-    { sessions: [], currentSession: { started: new Date(1766007440000) } },
-    {
-      kind: "log",
-      ts: 1766007441152,
-    },
-  );
+  const event = log({
+    sessions: [],
+    currentSession: { started: new Date(1766007440000) },
+  }, 1766007441152);
 
   assertEquals(event, { kind: "stop", ts: 1766007441152 });
 });
 
-function stubbedReducer(data: Event[]): LogReducer<State> {
+function stubbedReducer(data: Event[]): EventReducer<State> {
   return {
     reduce(
       reducer: (previousValue: State, currentValue: Event) => State,

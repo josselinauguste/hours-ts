@@ -1,6 +1,6 @@
-import {Session, State} from "./state.ts";
-import {Duration} from "./duration.ts";
-import {getDayName, getDayOfWeekFromStartDay, getStartOfWeek,} from "./week.ts";
+import {Session, State} from "../domain/state.ts";
+import {Duration} from "../domain/duration.ts";
+import {getDayName, getDayOfWeekFromStartDay, getStartOfWeek,} from "../domain/week.ts";
 
 export function report(state: State, startDay: number) {
   const startOfWeek = getStartOfWeek(new Date(), startDay);

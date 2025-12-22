@@ -1,10 +1,6 @@
 import * as path from "@std/path";
 import {ensureFile} from "@std/fs";
-
-export interface Configuration {
-  logFile: string;
-  startOfWeek: number;
-}
+import {Configuration} from "../domain/configuration.ts";
 
 export async function getConfiguration(
   env: Deno.Env,

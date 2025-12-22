@@ -1,4 +1,4 @@
-import {getConfiguration} from "../src/configuration.ts";
+import {getConfiguration} from "../src/infrastructure/configuration.ts";
 
 const configuration = await getConfiguration(Deno.env);
 

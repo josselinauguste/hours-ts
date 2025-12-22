@@ -1,17 +1,17 @@
-import {apply, loadState} from "./state.ts";
-import {openLog} from "./log.ts";
-import {getConfiguration} from "./configuration.ts";
-import {getCommand} from "./command.ts";
-import {report} from "./report.ts";
-import {Duration} from "./duration.ts";
+import {loadState} from "./domain/state.ts";
+import {openLog} from "./infrastructure/log.ts";
+import {getConfiguration} from "./infrastructure/configuration.ts";
+import {handleCommand, parseCommand} from "./application/command.ts";
+import {report} from "./view/report.ts";
+import {Duration} from "./domain/duration.ts";
 
 const configuration = await getConfiguration(Deno.env);
 
 const log = openLog(configuration.logFile);
 const state = await loadState(log);
 
-const command = getCommand(Deno.args);
-const [newState, event] = apply(state, command);
+const command = parseCommand(Deno.args);
+const [newState, event] = handleCommand(state, command);
 if (event) {
   await log.append(event);
 }

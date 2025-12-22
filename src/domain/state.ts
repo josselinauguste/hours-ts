@@ -1,5 +1,4 @@
-import {Event, LogReducer} from "./log.ts";
-import {Command} from "./command.ts";
+import {Event} from "./event.ts";
 
 interface ActiveSession {
   started: Date;
@@ -15,7 +14,14 @@ export interface State {
   currentSession: ActiveSession | null;
 }
 
-export function loadState(log: LogReducer<State>): Promise<State> {
+export type EventReducer<R> = {
+  reduce(
+    reducer: (state: R, event: Event) => R,
+    initialState: R,
+  ): Promise<R>;
+};
+
+export function loadState(log: EventReducer<State>): Promise<State> {
   return log
     .reduce((state: State, event: Event) => evolve(state, event) ?? state, {
       sessions: [],
@@ -23,7 +29,7 @@ export function loadState(log: LogReducer<State>): Promise<State> {
     });
 }
 
-function evolve(state: State, event: Event): State {
+export function evolve(state: State, event: Event): State {
   switch (event.kind) {
     case "start":
       if (state.currentSession === null) {
@@ -42,24 +48,10 @@ function evolve(state: State, event: Event): State {
   throw new Error("Unexpected event");
 }
 
-export function apply(state: State, command: Command) {
-  const event = applyCommandToState(command, state);
-  const newState = event ? evolve(state, event) : state;
-  return [newState, event] as const;
-}
-
-function applyCommandToState(
-  command: { kind: "log"; ts: number } | { kind: "report" },
-  state: State,
-): Event | null {
-  switch (command.kind) {
-    case "log":
-      if (state.currentSession === null) {
-        return { kind: "start", ts: command.ts };
-      } else {
-        return { kind: "stop", ts: command.ts };
-      }
-    case "report":
-      return null;
+export function log(state: State, ts: number): Event | undefined {
+  if (state.currentSession === null) {
+    return { kind: "start", ts: ts };
+  } else {
+    return { kind: "stop", ts: ts };
   }
 }

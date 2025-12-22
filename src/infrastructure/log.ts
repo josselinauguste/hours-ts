@@ -1,7 +1,4 @@
-export interface Event {
-  kind: "start" | "stop";
-  ts: number;
-}
+import { Event } from "../domain/event.ts";
 
 export function openLog(file: string) {
   return {
@@ -22,11 +19,3 @@ export function openLog(file: string) {
     },
   };
 }
-
-export type Log = ReturnType<typeof openLog>;
-export type LogReducer<R> = {
-  reduce(
-    reducer: (previousValue: R, currentValue: Event) => R,
-    initialValue: R,
-  ): Promise<R>;
-};
