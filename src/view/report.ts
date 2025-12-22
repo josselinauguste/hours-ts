@@ -4,7 +4,13 @@ import {getDayName, getDayOfWeekFromStartDay, getStartOfWeek,} from "../domain/w
 
 export function printReport(state: State, startDay: number) {
   const startOfWeek = getStartOfWeek(new Date(), startDay);
-  const week = state.sessions.filter((s) => s.start >= startOfWeek).reduce(
+  const sessions = state.currentSession
+    ? [...state.sessions, {
+      start: state.currentSession.started,
+      end: new Date(),
+    }]
+    : state.sessions;
+  const week = sessions.filter((s) => s.start >= startOfWeek).reduce(
     reduceWeekSessions(startDay),
     {},
   );
@@ -12,11 +18,19 @@ export function printReport(state: State, startDay: number) {
     console.log(
       `${getDayName(Number.parseInt(dayOfWeek))}\t${
         Duration.format(week[dayOfWeek])
+      }${
+        state.currentSession &&
+          dayOfWeek ===
+            getDayOfWeekFromStartDay(new Date(), startDay).toString()
+          ? "+"
+          : ""
       }`,
     );
   });
   const weekTime = Object.values(week).reduce((sum, value) => sum + value, 0);
-  console.log(`\t${Duration.format(weekTime)}`);
+  console.log(
+    `\t${Duration.format(weekTime)}${state.currentSession ? "+" : ""}`,
+  );
 }
 
 const reduceWeekSessions =
