@@ -1,0 +1,4 @@
+#!/bin/bash
+
+HOURS_PATH="${HOURS_PATH:-/Users/josselin/Code/hours}"
+deno run --allow-read --allow-write --allow-env "$HOURS_PATH/src/main.ts" "$@"
